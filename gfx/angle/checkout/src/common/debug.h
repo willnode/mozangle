@@ -192,10 +192,12 @@ class FmtHexHelper
         return FmtHexAutoSized(os, fmt.mValue, fmt.mPrefix, "0x", '0');
     }
 
+#ifndef __redox__
     friend std::wostream &operator<<(std::wostream &wos, const FmtHexHelper &fmt)
     {
         return FmtHexAutoSized(wos, fmt.mValue, fmt.mPrefix, L"0x", L'0');
     }
+#endif
 };
 
 }  // namespace priv

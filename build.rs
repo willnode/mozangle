@@ -242,9 +242,11 @@ fn build_single_lib(compiled_libraries: &mut HashSet<Libs>, target: &String, lib
             ),
             (
                 "freebsd",
-                &[
-                    "gfx/angle/checkout/src/common/system_utils_posix.cpp",
-                ][..],
+                &["gfx/angle/checkout/src/common/system_utils_posix.cpp"][..],
+            ),
+            (
+                "redox",
+                &["gfx/angle/checkout/src/common/system_utils_posix.cpp"][..],
             ),
             (
                 "windows",
@@ -344,8 +346,8 @@ fn build_translator(compiled_libraries: &mut HashSet<Libs>, target: &String) {
     let out_dir = PathBuf::from(env::var_os("OUT_DIR").unwrap());
     if cfg!(feature = "dynamic_lib") {
         build
-        .flag_if_supported("-shared")
-        .flag_if_supported("-dynamiclib");
+            .flag_if_supported("-shared")
+            .flag_if_supported("-dynamiclib");
 
         let mut cmd = build.get_compiler().to_command();
         cmd.arg(out_dir.join(format!("lib{}.a", data.lib)));
@@ -392,7 +394,15 @@ fn build_translator(compiled_libraries: &mut HashSet<Libs>, target: &String) {
         // ensure cxx
         .clang_arg("-x")
         .clang_arg("c++")
-        .clang_arg("-std=c++17");
+        .clang_arg("-std=c++17")
+        // redox: libcxx is incomplete
+        .clang_arg("-stdlib=libstdc++");
+
+    // uses libclang, bypassing clang cfg, so this is needed
+    if let Ok(sysroot) = std::env::var("COOKBOOK_HOST_SYSROOT") {
+        builder = builder.clang_arg(format!("--sysroot={}/{}", sysroot, target));
+        builder = builder.clang_arg(format!("--target={}", target));
+    }
 
     for func in ALLOWLIST_FN {
         builder = builder.allowlist_function(func)

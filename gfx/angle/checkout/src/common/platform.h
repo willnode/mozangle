@@ -28,7 +28,7 @@
 #    define ANGLE_PLATFORM_POSIX 1
 #elif defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) ||              \
     defined(__DragonFly__) || defined(__sun) || defined(__GLIBC__) || defined(__GNU__) || \
-    defined(__QNX__) || defined(__Fuchsia__) || defined(__HAIKU__)
+    defined(__QNX__) || defined(__Fuchsia__) || defined(__redox__) || defined(__HAIKU__)
 #    define ANGLE_PLATFORM_POSIX 1
 #else
 #    error Unsupported platform.
